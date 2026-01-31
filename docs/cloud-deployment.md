@@ -338,9 +338,10 @@ Once deployed and connected to Tailscale (see [Tailscale Setup](#tailscale-setup
 
 ### From Android (Konele)
 
-1. Install Konele from [F-Droid](https://f-droid.org/) (search "K6nele")
-2. Ensure Tailscale is installed and connected on your phone
-3. Configure Konele with server URL: `ws://whisper-hetzner:9002`
+1. Download Konele APK from [GitHub releases](https://github.com/Kaljurand/K6nele/releases)
+2. Install the APK (enable "Install from unknown sources" if needed)
+3. Ensure Tailscale is installed and connected on your phone
+4. Configure Konele with server URL: `ws://whisper-hetzner:9002`
 
 See [Android Setup](android-setup.md) for detailed configuration.
 

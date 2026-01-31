@@ -12,15 +12,9 @@ This guide covers configuring Konele on your Android device to use your self-hos
 
 Konele (K6nele) is an open-source speech recognition app for Android.
 
-**Option 1: F-Droid (Recommended)**
-
-1. Install [F-Droid](https://f-droid.org/)
-2. Search for "Konele" or "K6nele"
-3. Install the app
-
-**Option 2: Google Play Store**
-
-Search for "Kõnele" in the Play Store.
+1. Download the latest APK from [GitHub releases](https://github.com/Kaljurand/K6nele/releases)
+2. Enable "Install from unknown sources" in Android settings if prompted
+3. Install the APK
 
 ## Install Tailscale on Android
 
