@@ -45,6 +45,7 @@ site/
 # Environment
 .env
 .env.local
+.direnv
 
 # LLM notes
 .llm/

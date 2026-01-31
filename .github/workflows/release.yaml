@@ -136,6 +136,28 @@ jobs:
     needs: test
     if: ${{ inputs.dry_run }}
     steps:
+      - uses: actions/checkout@v4
+
+      - uses: paolino/dev-assets/setup-nix@v0.0.1
+        with:
+          cachix-auth-token: "${{ secrets.CACHIX_AUTH_TOKEN }}"
+
+      - name: Verify image tag
+        run: |
+          echo "${{ inputs.version }}" > VERSION
+          nix build .#docker-image
+          docker load < result
+
+          EXPECTED="ghcr.io/paolino/whisper-server:${{ inputs.version }}"
+          if docker image inspect "$EXPECTED" > /dev/null 2>&1; then
+            echo "Image tagged correctly: $EXPECTED"
+          else
+            echo "ERROR: Expected image tag $EXPECTED not found"
+            echo "Available images:"
+            docker images | grep whisper-server
+            exit 1
+          fi
+
       - name: Dry run summary
         run: |
           echo "Dry run completed successfully!"
