@@ -3,13 +3,14 @@ services:
     image: ghcr.io/paolino/whisper-server:latest
     container_name: whisper-server
     restart: unless-stopped
-    ports:
-      - "${WHISPER_PORT:-9002}:9002"
+    network_mode: host
     environment:
-      - WHISPER_MODEL=${WHISPER_MODEL:-base}
+      - WHISPER_HOST=${WHISPER_HOST}  # Set to Tailscale IP for secure remote access
+      - WHISPER_PORT=${WHISPER_PORT:-9002}
+      - WHISPER_MODEL=${WHISPER_MODEL:-small}
       - WHISPER_DEVICE=${WHISPER_DEVICE:-auto}
       - WHISPER_COMPUTE_TYPE=${WHISPER_COMPUTE_TYPE:-auto}
-      - WHISPER_LANGUAGE=${WHISPER_LANGUAGE:-}
+      # WHISPER_LANGUAGE - set to language code (e.g., en, it) or omit for auto-detect
     volumes:
       - whisper-cache:/tmp/pip-packages
       - huggingface-cache:/tmp/.cache
