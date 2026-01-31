@@ -11,14 +11,14 @@ import websockets
 from websockets.http11 import Request, Response
 
 if TYPE_CHECKING:
-    from websockets.asyncio.server import Server, ServerConnection
+    from websockets.asyncio.server import ServerConnection
 
 from config import Config, load_config
 from transcriber import Transcriber
 
 
 def process_request(
-    connection: Server,
+    connection: ServerConnection,
     request: Request,
 ) -> Response | None:
     """Process incoming WebSocket request.
