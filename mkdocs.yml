@@ -38,6 +38,7 @@ markdown_extensions:
 
 nav:
   - Home: index.md
+  - Concepts: concepts.md
   - Installation: installation.md
   - Android Setup: android-setup.md
   - Configuration: configuration.md
