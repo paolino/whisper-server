@@ -104,14 +104,16 @@ Or download from [tailscale.com/download](https://tailscale.com/download)
 
 The cloud server needs an auth key to join your tailnet automatically:
 
-1. Go to [Tailscale Admin Console](https://login.tailscale.com/admin/settings/keys)
-2. Click "Generate auth key"
-3. Settings:
+1. Log in at [login.tailscale.com](https://login.tailscale.com/)
+2. Click **Settings** (bottom of left sidebar)
+3. Click **Keys** (under Personal Settings)
+4. Click **Generate auth key**
+5. Settings:
     - **Reusable**: Yes (for testing) or No (more secure)
     - **Expiration**: 90 days is fine
     - **Tags**: Optional, leave empty
-4. Click "Generate key"
-5. Copy the key (starts with `tskey-auth-`)
+6. Click **Generate key**
+7. Copy the key (starts with `tskey-auth-`)
 
 Save this key - you'll use it after deploying the server.
 
