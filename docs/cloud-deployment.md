@@ -79,7 +79,7 @@ Tailscale creates a private network (called a "tailnet") between your devices. Y
 
 Install Tailscale on every device that needs to access the whisper server:
 
-**Android (for Konele):**
+**Android:**
 
 1. Install [Tailscale from Play Store](https://play.google.com/store/apps/details?id=com.tailscale.ipn)
 2. Open app and sign in with same account
@@ -155,7 +155,7 @@ After connecting, your server is reachable by:
 - **Tailscale IP**: `100.x.x.x` (shown in `tailscale status`)
 - **MagicDNS**: `whisper-hetzner.your-tailnet.ts.net`
 
-For Konele, use: `ws://whisper-hetzner:9002/ws`
+For Konele configuration, see [Android Setup](android-setup.md).
 
 ---
 
@@ -338,10 +338,11 @@ Once deployed and connected to Tailscale (see [Tailscale Setup](#tailscale-setup
 
 ### From Android (Konele)
 
-1. Ensure Tailscale is installed and connected on your phone
-2. Open Konele settings
-3. Set server URL to: `ws://whisper-hetzner:9002/ws`
-   (replace `whisper-hetzner` with your server's hostname)
+1. Install Konele from [F-Droid](https://f-droid.org/) (search "K6nele")
+2. Ensure Tailscale is installed and connected on your phone
+3. Configure Konele with server URL: `ws://whisper-hetzner:9002`
+
+See [Android Setup](android-setup.md) for detailed configuration.
 
 ### Test from Command Line
 
