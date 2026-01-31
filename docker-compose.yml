@@ -1,0 +1,25 @@
+services:
+  whisper-server:
+    image: ghcr.io/paolino/whisper-server:latest
+    container_name: whisper-server
+    restart: unless-stopped
+    ports:
+      - "${WHISPER_PORT:-9002}:9002"
+    environment:
+      - WHISPER_MODEL=${WHISPER_MODEL:-base}
+      - WHISPER_DEVICE=${WHISPER_DEVICE:-auto}
+      - WHISPER_COMPUTE_TYPE=${WHISPER_COMPUTE_TYPE:-auto}
+      - WHISPER_LANGUAGE=${WHISPER_LANGUAGE:-}
+    volumes:
+      - whisper-cache:/tmp/pip-packages
+      - huggingface-cache:/tmp/.cache
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import socket; s=socket.socket(); s.connect(('localhost',9002)); s.close()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  whisper-cache:
+  huggingface-cache:
