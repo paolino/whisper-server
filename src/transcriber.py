@@ -84,7 +84,7 @@ class Transcriber:
 
         return header + pcm_data
 
-    def _wav_to_array(self, wav_data: bytes) -> np.ndarray[np.floating]:
+    def _wav_to_array(self, wav_data: bytes) -> np.ndarray:  # type: ignore[type-arg]
         """Convert WAV bytes to numpy array normalized to [-1, 1]."""
         buffer = io.BytesIO(wav_data)
         buffer.seek(44)  # Skip WAV header
