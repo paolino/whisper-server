@@ -8,12 +8,31 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 import websockets
+from websockets.http11 import Request, Response
 
 if TYPE_CHECKING:
-    from websockets.asyncio.server import ServerConnection
+    from websockets.asyncio.server import Server, ServerConnection
 
 from config import Config, load_config
 from transcriber import Transcriber
+
+
+def process_request(
+    connection: Server,
+    request: Request,
+) -> Response | None:
+    """Process incoming WebSocket request.
+
+    Removes empty Sec-WebSocket-Protocol header that Konele sends,
+    which would otherwise cause the websockets library to reject
+    the connection.
+    """
+    # Remove empty subprotocol header (Konele sends this)
+    if "Sec-WebSocket-Protocol" in request.headers:
+        protocol = request.headers["Sec-WebSocket-Protocol"]
+        if not protocol or not protocol.strip():
+            del request.headers["Sec-WebSocket-Protocol"]
+    return None
 
 logging.basicConfig(
     level=logging.INFO,
@@ -133,6 +152,7 @@ class WhisperServer:
             self.handle_connection,
             self.config.host,
             self.config.port,
+            process_request=process_request,
         ):
             await asyncio.Future()  # Run forever
 
