@@ -34,8 +34,9 @@ Konele (K6nele) is an open-source speech recognition app for Android. Install fr
 ### Step 1: Open Settings
 
 1. Open the **Konele** app
-2. Tap the **three dots menu** (⋮) in the top-right corner
-3. Select **Settings**
+2. Tap the **settings icon** (⚙️) in the top-right corner
+
+![Konele main screen](assets/screenshots/01-konele-main.png)
 
 
 ### Step 2: Navigate to Recognition Services
@@ -110,7 +111,6 @@ When typing in any app:
 4. Speak clearly, then pause
 5. Your transcription appears in the text field
 
-![Konele voice input - tap and speak](assets/screenshots/05-konele-in-use.png)
 
 ## Test Your Setup
 
