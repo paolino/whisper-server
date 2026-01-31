@@ -159,3 +159,19 @@ build-gcp-image:
     set -euo pipefail
     nix build ".#nixosConfigurations.whisper-gcp.config.system.build.googleComputeImage"
     echo "GCP image built: $(readlink -f result)"
+
+# Validate release version format and check tag availability
+validate-release version:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if ! echo "{{ version }}" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+        echo "Invalid version format: {{ version }}"
+        echo "Expected format: MAJOR.MINOR.PATCH (e.g., 1.2.0)"
+        exit 1
+    fi
+    echo "Version format valid: {{ version }}"
+    if git rev-parse "v{{ version }}" >/dev/null 2>&1; then
+        echo "Tag v{{ version }} already exists!"
+        exit 1
+    fi
+    echo "Tag v{{ version }} is available"
