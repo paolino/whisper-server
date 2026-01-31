@@ -127,13 +127,67 @@ jobs:
             "ghcr.io/paolino/whisper-server:latest"
           docker push "ghcr.io/paolino/whisper-server:latest"
 
+      - name: Generate release notes
+        id: notes
+        run: |
+          # Find previous tag
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          if [ -z "$PREV_TAG" ]; then
+            RANGE="HEAD"
+          else
+            RANGE="${PREV_TAG}..HEAD"
+          fi
+
+          # Generate categorized notes
+          {
+            echo "## What's Changed"
+            echo ""
+
+            # Features
+            FEATS=$(git log --oneline "$RANGE" --grep="^feat" --pretty=format:"- %s" 2>/dev/null || true)
+            if [ -n "$FEATS" ]; then
+              echo "### Features"
+              echo "$FEATS"
+              echo ""
+            fi
+
+            # Fixes
+            FIXES=$(git log --oneline "$RANGE" --grep="^fix" --pretty=format:"- %s" 2>/dev/null || true)
+            if [ -n "$FIXES" ]; then
+              echo "### Bug Fixes"
+              echo "$FIXES"
+              echo ""
+            fi
+
+            # Docs
+            DOCS=$(git log --oneline "$RANGE" --grep="^docs" --pretty=format:"- %s" 2>/dev/null || true)
+            if [ -n "$DOCS" ]; then
+              echo "### Documentation"
+              echo "$DOCS"
+              echo ""
+            fi
+
+            # CI/Chore
+            OTHER=$(git log --oneline "$RANGE" --grep="^ci\|^chore\|^style\|^refactor\|^test" --pretty=format:"- %s" 2>/dev/null || true)
+            if [ -n "$OTHER" ]; then
+              echo "### Other"
+              echo "$OTHER"
+              echo ""
+            fi
+
+            echo "---"
+            echo "**Docker:** [\`ghcr.io/paolino/whisper-server:${{ inputs.version }}\`](https://github.com/paolino/whisper-server/pkgs/container/whisper-server)"
+          } > release-notes.md
+
+          cat release-notes.md
+
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release create "v${{ inputs.version }}" \
             --title "v${{ inputs.version }}" \
-            --generate-notes
+            --notes-file release-notes.md
 
   dry-run-summary:
     runs-on: ubuntu-latest
