@@ -12,9 +12,40 @@
       nixpkgs,
       flake-utils,
     }:
+    let
+      # Cloud machine configurations (x86_64-linux only)
+      mkCloudSystem =
+        {
+          system ? "x86_64-linux",
+          modules,
+        }:
+        nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = {
+            whisperServerSrc = ./src;
+          };
+          modules = [
+            self.nixosModules.whisper-server
+          ] ++ modules;
+        };
+    in
     {
       nixosModules.default = import ./nix/module.nix;
       nixosModules.whisper-server = import ./nix/module.nix;
+
+      nixosConfigurations = {
+        whisper-hetzner = mkCloudSystem {
+          modules = [ ./nix/cloud/hetzner.nix ];
+        };
+
+        whisper-aws = mkCloudSystem {
+          modules = [ ./nix/cloud/aws.nix ];
+        };
+
+        whisper-gcp = mkCloudSystem {
+          modules = [ ./nix/cloud/gcp.nix ];
+        };
+      };
     }
     // flake-utils.lib.eachSystem
       [

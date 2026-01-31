@@ -42,4 +42,5 @@ nav:
   - Installation: installation.md
   - Android Setup: android-setup.md
   - Configuration: configuration.md
+  - Cloud Deployment: cloud-deployment.md
   - Architecture: architecture.md

@@ -108,3 +108,40 @@ build-docs:
     #!/usr/bin/env bash
     set -euo pipefail
     nix develop github:paolino/dev-assets?dir=mkdocs -c mkdocs build
+
+# Build cloud NixOS configuration
+build-cloud target:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    case "{{ target }}" in
+        hetzner|aws|gcp)
+            nix build ".#nixosConfigurations.whisper-{{ target }}.config.system.build.toplevel"
+            ;;
+        *)
+            echo "Unknown target: {{ target }}"
+            echo "Valid targets: hetzner, aws, gcp"
+            exit 1
+            ;;
+    esac
+
+# Deploy to Hetzner via nixos-rebuild
+deploy-hetzner host:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    nixos-rebuild switch --flake ".#whisper-hetzner" \
+        --target-host "root@{{ host }}" \
+        --build-host "root@{{ host }}"
+
+# Build AWS AMI
+build-aws-ami:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    nix build ".#nixosConfigurations.whisper-aws.config.system.build.amazonImage"
+    echo "AMI image built: $(readlink -f result)"
+
+# Build GCP image
+build-gcp-image:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    nix build ".#nixosConfigurations.whisper-gcp.config.system.build.googleComputeImage"
+    echo "GCP image built: $(readlink -f result)"
