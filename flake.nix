@@ -70,10 +70,15 @@
           dockerImage = import ./nix/docker-image.nix {
             inherit pkgs version;
           };
+
+          smokeTest = pkgs.writeShellScriptBin "smoke-test" ''
+            ${pythonEnv}/bin/python ${./scripts/smoke-test.py} "$@"
+          '';
         in
         {
           packages = {
             docker-image = dockerImage;
+            smoke-test = smokeTest;
             default = pythonEnv;
           };
 

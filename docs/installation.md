@@ -178,27 +178,22 @@ This ensures the server is only accessible via Tailscale, not from the public in
 
 ## Verifying the Installation
 
-Test the server with a simple WebSocket client:
+Run the smoke test:
 
-```python
-import asyncio
-import websockets
-import json
+```bash
+nix run github:paolino/whisper-server#smoke-test -- 9002
+```
 
-async def test():
-    async with websockets.connect("ws://localhost:9002") as ws:
-        # Send empty audio + EOF
-        await ws.send(json.dumps({"eof": True}))
-        response = await ws.recv()
-        print(response)
+Or if you have the repo cloned:
 
-asyncio.run(test())
+```bash
+nix run .#smoke-test -- 9002
 ```
 
 Expected output:
 
-```json
-{"status": 0, "result": {"hypotheses": [{"transcript": ""}], "final": true}}
+```
+SMOKE TEST PASSED
 ```
 
 ## Next Steps
