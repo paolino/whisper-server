@@ -88,7 +88,7 @@ sequenceDiagram
         K->>S: Binary (audio chunk)
     end
 
-    K->>S: Text: {"eof": true}
+    K->>S: Text: "EOS"
     Note over S: Transcribe audio
 
     S-->>K: Text: {"status": 0, "result": {...}}
@@ -98,10 +98,16 @@ sequenceDiagram
 
 **Audio chunks**: Raw binary data (PCM audio)
 
-**End of stream**: JSON message
+**End of stream**: Either format is supported:
+```
+EOS
+```
+or
 ```json
 {"eof": true}
 ```
+
+Konele uses the `EOS` string format (kaldi-gstreamer-server protocol).
 
 ### Response Format
 

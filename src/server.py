@@ -59,11 +59,22 @@ class WhisperServer:
         message: str,
         audio_buffer: bytearray,
     ) -> None:
-        """Handle JSON control message from Konele."""
+        """Handle control message from Konele.
+
+        Supports both:
+        - "EOS" string (kaldi-gstreamer-server protocol, used by Konele)
+        - {"eof": true} JSON (alternative format)
+        """
+        # Handle Konele's EOS string
+        if message == "EOS":
+            await self._transcribe_and_respond(websocket, bytes(audio_buffer))
+            return
+
+        # Handle JSON format
         try:
             data = json.loads(message)
         except json.JSONDecodeError:
-            logger.warning("Invalid JSON received: %s", message)
+            logger.warning("Unknown control message: %s", message)
             return
 
         if data.get("eof"):

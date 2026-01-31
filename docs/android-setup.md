@@ -38,9 +38,9 @@ Konele (K6nele) is an open-source speech recognition app for Android.
 | Setting | Value |
 |---------|-------|
 | **Name** | Whisper (or any name) |
-| **URL** | `ws://YOUR_TAILSCALE_IP:9002` |
+| **URL** | `ws://YOUR_TAILSCALE_IP:9002/client/ws/speech` |
 
-Replace `YOUR_TAILSCALE_IP` with your server's Tailscale IP.
+Replace `YOUR_TAILSCALE_IP` with your server's Tailscale IP (e.g., `100.64.1.42`).
 
 ### Step 3: Set Audio Format
 
