@@ -8,45 +8,64 @@ This guide covers configuring Konele on your Android device to use your self-hos
 - Android device on the same Tailscale network
 - Your server's Tailscale IP (e.g., `100.64.1.42`)
 
-## Install Konele
-
-Konele (K6nele) is an open-source speech recognition app for Android.
-
-1. Download the latest APK from [GitHub releases](https://github.com/Kaljurand/K6nele/releases)
-2. Enable "Install from unknown sources" in Android settings if prompted
-3. Install the APK
-
-## Install Tailscale on Android
+## Install Tailscale
 
 1. Install [Tailscale](https://play.google.com/store/apps/details?id=com.tailscale.ipn) from Play Store
 2. Sign in with your Tailscale account
-3. Ensure the connection is active
+3. Ensure the VPN is connected (check for the Tailscale icon in your status bar)
+
+## Install Konele
+
+Konele (K6nele) is an open-source speech recognition app for Android. Install from any of these sources:
+
+| Source | Link |
+|--------|------|
+| **Google Play** | [Konele on Play Store](https://play.google.com/store/apps/details?id=ee.ioc.phon.android.speak) |
+| **F-Droid** | [Konele on F-Droid](https://f-droid.org/en/packages/ee.ioc.phon.android.speak/) |
+| **GitHub** | [Latest APK release](https://github.com/Kaljurand/K6nele/releases) |
 
 ## Configure Konele
 
-### Step 1: Open Konele Settings
+### Step 1: Open Settings
 
-1. Open Konele app
-2. Tap the menu (three dots) → **Settings**
-3. Go to **Recognition services**
+1. Open the **Konele** app
+2. Tap the **three dots menu** (⋮) in the top-right corner
+3. Select **Settings**
 
-### Step 2: Add Custom Server
+<!-- ![Konele main screen](assets/screenshots/01-konele-main.png) -->
 
-1. Tap **Add server**
-2. Configure as follows:
+### Step 2: Navigate to Recognition Services
 
-| Setting | Value |
-|---------|-------|
-| **Name** | Whisper (or any name) |
-| **URL** | `ws://YOUR_TAILSCALE_IP:9002/client/ws/speech` |
+1. In Settings, scroll down to find **Recognition services and languages**
+2. Tap to open it
+
+<!-- ![Konele settings](assets/screenshots/02-konele-settings.png) -->
+
+### Step 3: Select Fast Recognition Service
+
+1. Find **Kõnele (fast recognition)** in the list
+2. Tap on it to configure
+
+<!-- ![Recognition services list](assets/screenshots/03-recognition-services.png) -->
+
+### Step 4: Configure the WebSocket Server
+
+1. Tap on **Service based on grammar URL**
+2. Enter your Whisper server URL:
+
+```
+ws://YOUR_TAILSCALE_IP:9002/client/ws/speech
+```
 
 Replace `YOUR_TAILSCALE_IP` with your server's Tailscale IP (e.g., `100.64.1.42`).
 
-### Step 3: Set Audio Format
+<!-- ![WebSocket URL configuration](assets/screenshots/04-websocket-url.png) -->
 
-This is critical - Konele must send audio in the format the server expects:
+### Step 5: Set Audio Format (Critical)
 
-1. In the server settings, find **Content-Type**
+The audio format must match what the server expects:
+
+1. Find the **Content-Type** setting
 2. Set it to:
 
 ```
@@ -54,77 +73,77 @@ audio/x-raw, layout=(string)interleaved, rate=(int)16000, format=(string)S16LE, 
 ```
 
 !!! warning "Audio Format"
-    Using the wrong audio format will result in garbled transcriptions or errors.
+    Using the wrong audio format will result in garbled transcriptions or silence.
 
-### Step 4: Set as Default
+<!-- ![Content-Type configuration](assets/screenshots/05-content-type.png) -->
 
-1. Go back to **Recognition services**
-2. Select your Whisper server as the default
+### Step 6: Set as Default Service
+
+1. Go back to **Recognition services and languages**
+2. Tap **Default recognition service**
+3. Select **Kõnele (fast recognition)**
+
+<!-- ![Default service selection](assets/screenshots/06-default-service.png) -->
 
 ## Enable as Input Method
 
-To use Konele as a keyboard for voice input:
+To use Konele as a voice keyboard in any app:
 
 ### Step 1: Enable in Android Settings
 
-1. Go to Android **Settings** → **System** → **Languages & input**
-2. Tap **On-screen keyboard** or **Virtual keyboard**
-3. Tap **Manage keyboards**
-4. Enable **Konele**
+1. Open Android **Settings**
+2. Go to **System** → **Languages & input** (or search for "keyboard")
+3. Tap **On-screen keyboard** or **Virtual keyboard**
+4. Tap **Manage keyboards**
+5. Enable **Kõnele speech keyboard**
 
-### Step 2: Switch Keyboards
+<!-- ![Android keyboard settings](assets/screenshots/07-android-keyboard.png) -->
+
+### Step 2: Use Voice Input
 
 When typing in any app:
 
-1. Tap the keyboard icon in the navigation bar (or notification)
-2. Select **Konele**
-3. Tap the microphone button to start speaking
+1. Tap the keyboard switcher icon (usually in the navigation bar or keyboard)
+2. Select **Kõnele**
+3. Tap the **microphone button** to start speaking
+4. Speak clearly, then pause
+5. Your transcription appears in the text field
 
-## Usage Tips
+<!-- ![Konele keyboard in use](assets/screenshots/08-konele-keyboard.png) -->
 
-### Voice Input
+## Test Your Setup
 
-1. Tap the microphone button
-2. Speak clearly
-3. Pause when done - the server will transcribe automatically
-4. Text appears in the input field
+1. Open any app with a text field (e.g., Notes, Messages)
+2. Switch to Konele keyboard
+3. Tap the microphone and say something
+4. Verify the transcription appears
 
-### Quick Switch
-
-Many Android keyboards show a microphone icon. Tapping it often launches Konele directly if configured as the default voice input.
-
-### Language Selection
-
-Konele can send a language hint to the server. Configure this in:
-
-**Settings** → **Recognition services** → **Your server** → **Language**
-
-The server will use this for better accuracy if configured.
+If it works, you'll see your spoken text appear after a brief pause.
 
 ## Troubleshooting
 
 ### Connection Failed
 
-- Verify Tailscale is connected on both devices
-- Check server is running: `curl -v ws://YOUR_IP:9002`
-- Ensure port 9002 is open on the server's Tailscale interface
+- **Check Tailscale**: Ensure both devices show as connected in the Tailscale app
+- **Verify server is running**: On your server, check `systemctl status whisper-server` or `docker ps`
+- **Test connectivity**: From your phone's browser, try accessing `http://YOUR_TAILSCALE_IP:9002` (it won't load a page, but shouldn't timeout)
 
 ### No Transcription / Empty Results
 
-- Check the audio format is set correctly
-- Ensure you're speaking after tapping the microphone
-- Check server logs for errors
+- Verify the WebSocket URL is correct (including `/client/ws/speech` path)
+- Check the Content-Type is set exactly as shown above
+- Look at server logs for errors
 
 ### Garbled Transcription
 
-- Audio format mismatch - verify Content-Type setting
-- Try a larger Whisper model (medium, large)
+- Audio format mismatch - double-check the Content-Type setting
+- Try a larger Whisper model on your server (medium or large-v3)
 
 ### Slow Transcription
 
-- Consider using a GPU on your server
-- Use a smaller model (tiny, base)
-- Reduce network latency (server geographically closer)
+- Use a GPU on your server if available
+- Try a smaller model (tiny or base) for faster results
+- Reduce network latency by hosting the server closer to you
 
 ## Next Steps
 
