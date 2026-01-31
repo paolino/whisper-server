@@ -1,12 +1,16 @@
 """WebSocket server implementing Konele protocol."""
 
+from __future__ import annotations
+
 import asyncio
 import json
 import logging
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import websockets
-from websockets.server import WebSocketServerProtocol
+
+if TYPE_CHECKING:
+    from websockets.asyncio.server import ServerConnection
 
 from config import Config, load_config
 from transcriber import Transcriber
@@ -26,7 +30,7 @@ class WhisperServer:
         self.config = config
         self.transcriber = Transcriber(config)
 
-    async def handle_connection(self, websocket: WebSocketServerProtocol) -> None:
+    async def handle_connection(self, websocket: ServerConnection) -> None:
         """Handle a WebSocket connection from Konele."""
         client_addr = websocket.remote_address
         logger.info("Client connected: %s", client_addr)
@@ -51,7 +55,7 @@ class WhisperServer:
 
     async def _handle_control_message(
         self,
-        websocket: WebSocketServerProtocol,
+        websocket: ServerConnection,
         message: str,
         audio_buffer: bytearray,
     ) -> None:
@@ -67,7 +71,7 @@ class WhisperServer:
 
     async def _transcribe_and_respond(
         self,
-        websocket: WebSocketServerProtocol,
+        websocket: ServerConnection,
         audio_data: bytes,
     ) -> None:
         """Transcribe audio and send response."""
@@ -89,7 +93,7 @@ class WhisperServer:
 
     async def _send_response(
         self,
-        websocket: WebSocketServerProtocol,
+        websocket: ServerConnection,
         transcript: str,
         final: bool = False,
     ) -> None:
