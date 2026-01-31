@@ -91,26 +91,16 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Update VERSION file
+      - name: Set version and build Docker image
         run: |
           echo "${{ inputs.version }}" > VERSION
-          git add VERSION
-          if git diff --cached --quiet; then
-            echo "VERSION already set to ${{ inputs.version }}"
-          else
-            git commit -m "chore: bump version to ${{ inputs.version }}"
-            git push
-          fi
+          nix build .#docker-image
+          docker load < result
 
       - name: Create and push tag
         run: |
           git tag "v${{ inputs.version }}"
           git push origin "v${{ inputs.version }}"
-
-      - name: Build Docker image
-        run: |
-          nix build .#docker-image
-          docker load < result
 
       - name: Login to ghcr.io
         uses: docker/login-action@v3
