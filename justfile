@@ -68,6 +68,22 @@ stop-docker:
     #!/usr/bin/env bash
     docker stop whisper-server || true
 
+# Start with docker-compose
+up:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    docker compose up -d
+
+# Stop docker-compose
+down:
+    #!/usr/bin/env bash
+    docker compose down
+
+# View docker-compose logs
+logs:
+    #!/usr/bin/env bash
+    docker compose logs -f
+
 # Smoke test docker image
 smoke-test-docker port="9003":
     #!/usr/bin/env bash
