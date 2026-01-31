@@ -37,34 +37,33 @@ Konele (K6nele) is an open-source speech recognition app for Android. Install fr
 2. Tap the **three dots menu** (⋮) in the top-right corner
 3. Select **Settings**
 
-<!-- ![Konele main screen](assets/screenshots/01-konele-main.png) -->
 
 ### Step 2: Navigate to Recognition Services
 
-1. In Settings, scroll down to find **Recognition services and languages**
+1. In Settings, scroll down to find **Recognition services**
 2. Tap to open it
 
-<!-- ![Konele settings](assets/screenshots/02-konele-settings.png) -->
+![Konele settings - tap Recognition services](assets/screenshots/02-konele-settings.png)
 
 ### Step 3: Select Fast Recognition Service
 
 1. Find **Kõnele (fast recognition)** in the list
 2. Tap on it to configure
 
-<!-- ![Recognition services list](assets/screenshots/03-recognition-services.png) -->
+![Recognition services - tap Kõnele fast recognition](assets/screenshots/03-recognition-services.png)
 
 ### Step 4: Configure the WebSocket Server
 
-1. Tap on **Service based on grammar URL**
+1. Tap on **Server URL**
 2. Enter your Whisper server URL:
 
 ```
-ws://YOUR_TAILSCALE_IP:9002/client/ws/speech
+ws://YOUR_TAILSCALE_IP:9002
 ```
 
-Replace `YOUR_TAILSCALE_IP` with your server's Tailscale IP (e.g., `100.64.1.42`).
+Replace `YOUR_TAILSCALE_IP` with your server's Tailscale IP (e.g., `100.94.38.126`).
 
-<!-- ![WebSocket URL configuration](assets/screenshots/04-websocket-url.png) -->
+![Server URL configuration](assets/screenshots/04-server-url.png)
 
 ### Step 5: Set Audio Format (Critical)
 
@@ -80,7 +79,6 @@ audio/x-raw, layout=(string)interleaved, rate=(int)16000, format=(string)S16LE, 
 !!! warning "Audio Format"
     Using the wrong audio format will result in garbled transcriptions or silence.
 
-<!-- ![Content-Type configuration](assets/screenshots/05-content-type.png) -->
 
 ### Step 6: Set as Default Service
 
@@ -88,7 +86,6 @@ audio/x-raw, layout=(string)interleaved, rate=(int)16000, format=(string)S16LE, 
 2. Tap **Default recognition service**
 3. Select **Kõnele (fast recognition)**
 
-<!-- ![Default service selection](assets/screenshots/06-default-service.png) -->
 
 ## Enable as Input Method
 
@@ -102,7 +99,6 @@ To use Konele as a voice keyboard in any app:
 4. Tap **Manage keyboards**
 5. Enable **Kõnele speech keyboard**
 
-<!-- ![Android keyboard settings](assets/screenshots/07-android-keyboard.png) -->
 
 ### Step 2: Use Voice Input
 
@@ -114,7 +110,7 @@ When typing in any app:
 4. Speak clearly, then pause
 5. Your transcription appears in the text field
 
-<!-- ![Konele keyboard in use](assets/screenshots/08-konele-keyboard.png) -->
+![Konele voice input - tap and speak](assets/screenshots/05-konele-in-use.png)
 
 ## Test Your Setup
 
