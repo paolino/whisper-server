@@ -12,15 +12,19 @@ from config import Config
 
 logger = logging.getLogger(__name__)
 
-# Language-specific prompts for grammar correction
+# Language-specific prompts for grammar correction (ChatML format)
 PROMPTS = {
     "en": (
-        "Fix any grammar and spelling errors in the following text. "
-        "Return only the corrected text without explanations:\n\n{text}"
+        "<|user|>\n"
+        "Copy this text exactly, fixing only spelling mistakes:\n"
+        "{text}\n"
+        "<|assistant|>\n"
     ),
     "it": (
-        "Correggi eventuali errori grammaticali e ortografici nel seguente testo. "
-        "Restituisci solo il testo corretto senza spiegazioni:\n\n{text}"
+        "<|user|>\n"
+        "Copia questo testo esattamente, correggendo solo errori di ortografia:\n"
+        "{text}\n"
+        "<|assistant|>\n"
     ),
 }
 
