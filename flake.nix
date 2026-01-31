@@ -12,7 +12,11 @@
       nixpkgs,
       flake-utils,
     }:
-    flake-utils.lib.eachSystem
+    {
+      nixosModules.default = import ./nix/module.nix;
+      nixosModules.whisper-server = import ./nix/module.nix;
+    }
+    // flake-utils.lib.eachSystem
       [
         "x86_64-linux"
         "aarch64-darwin"

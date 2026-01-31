@@ -49,49 +49,87 @@ just run
 
 The server starts on port 9002 by default.
 
-## Systemd Service
+## NixOS Module
 
-For production, create a systemd service:
+The recommended way to deploy on NixOS is using the provided module:
+
+```nix
+# flake.nix
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    whisper-server.url = "github:paolino/whisper-server";
+  };
+
+  outputs = { nixpkgs, whisper-server, ... }: {
+    nixosConfigurations.myhost = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        whisper-server.nixosModules.default
+        ./configuration.nix
+      ];
+    };
+  };
+}
+```
+
+Then enable the service:
 
 ```nix
 # configuration.nix
+{ pkgs, ... }:
 {
-  systemd.services.whisper-server = {
-    description = "Whisper Speech-to-Text Server";
-    after = [ "network.target" ];
-    wantedBy = [ "multi-user.target" ];
-
-    serviceConfig = {
-      Type = "simple";
-      User = "whisper";
-      Group = "whisper";
-      WorkingDirectory = "/opt/whisper-server";
-      ExecStart = "${pkgs.bash}/bin/bash -c 'source .venv/bin/activate && python src/server.py'";
-      Restart = "always";
-      RestartSec = 10;
-
-      # Security hardening
-      NoNewPrivileges = true;
-      ProtectSystem = "strict";
-      ProtectHome = true;
-      PrivateTmp = true;
-    };
-
-    environment = {
-      WHISPER_HOST = "0.0.0.0";
-      WHISPER_PORT = "9002";
-      WHISPER_MODEL = "base";
-    };
+  services.whisper-server = {
+    enable = true;
+    package = pkgs.fetchFromGitHub {
+      owner = "paolino";
+      repo = "whisper-server";
+      rev = "main";
+      hash = "sha256-...";
+    } + "/src";
+    model = "base";
+    port = 9002;
   };
-
-  users.users.whisper = {
-    isSystemUser = true;
-    group = "whisper";
-    home = "/opt/whisper-server";
-  };
-  users.groups.whisper = {};
 }
 ```
+
+### Tailscale Integration
+
+For secure remote access, enable Tailscale mode:
+
+```nix
+{
+  services.whisper-server = {
+    enable = true;
+    package = ./path/to/whisper-server/src;
+    model = "medium";
+    tailscale.enable = true;
+  };
+
+  services.tailscale.enable = true;
+}
+```
+
+This automatically:
+
+- Binds to your Tailscale IP
+- Opens port 9002 only on the Tailscale interface
+- Starts after tailscaled
+
+### Available Options
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `enable` | `false` | Enable the service |
+| `package` | required | Path to src directory |
+| `host` | `"127.0.0.1"` | Listen address |
+| `port` | `9002` | Listen port |
+| `model` | `"base"` | Whisper model (tiny/base/small/medium/large-v3) |
+| `device` | `"auto"` | Compute device (auto/cpu/cuda) |
+| `computeType` | `"auto"` | Precision (auto/int8/float16/float32) |
+| `language` | `null` | Language code (null for auto-detect) |
+| `tailscale.enable` | `false` | Listen on Tailscale only |
+| `tailscale.interface` | `"tailscale0"` | Tailscale interface name |
 
 ## Docker Deployment
 
@@ -120,7 +158,9 @@ docker run -d --rm \
 
 ## Firewall Configuration
 
-Only expose the server on the Tailscale interface:
+When using `tailscale.enable = true`, the firewall is configured automatically.
+
+For manual setups, only expose the server on the Tailscale interface:
 
 ```nix
 # configuration.nix
