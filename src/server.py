@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from websockets.asyncio.server import ServerConnection
 
 from config import Config, load_config
+from postprocessor import PostProcessor
 from transcriber import Transcriber
 
 
@@ -49,6 +50,7 @@ class WhisperServer:
         """Initialize server with configuration."""
         self.config = config
         self.transcriber = Transcriber(config)
+        self.postprocessor = PostProcessor(config)
 
     async def handle_connection(self, websocket: ServerConnection) -> None:
         """Handle a WebSocket connection from Konele."""
@@ -120,6 +122,16 @@ class WhisperServer:
         )
 
         logger.info("Transcription: %s", transcript)
+
+        if self.postprocessor.enabled:
+            transcript = await loop.run_in_executor(
+                None,
+                self.postprocessor.process,
+                transcript,
+                self.config.language,
+            )
+            logger.info("Post-processed: %s", transcript)
+
         await self._send_response(websocket, transcript, final=True)
 
     async def _send_response(
@@ -142,6 +154,10 @@ class WhisperServer:
         """Start the WebSocket server."""
         logger.info("Loading Whisper model: %s", self.config.model)
         _ = self.transcriber.model  # Preload model
+
+        if self.postprocessor.enabled:
+            logger.info("Loading LLama model: %s", self.config.llama_model_path)
+            _ = self.postprocessor.model  # Preload model
 
         logger.info(
             "Starting server on %s:%d",
