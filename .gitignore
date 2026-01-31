@@ -36,6 +36,9 @@ ENV/
 result
 result-*
 
+# Version file (created by release workflow)
+VERSION
+
 # MkDocs
 site/
 
