@@ -1,5 +1,7 @@
 """Whisper transcription wrapper."""
 
+from __future__ import annotations
+
 import io
 import struct
 from typing import TYPE_CHECKING
@@ -18,10 +20,10 @@ class Transcriber:
     def __init__(self, config: Config) -> None:
         """Initialize the transcriber with configuration."""
         self.config = config
-        self._model: "WhisperModel | None" = None
+        self._model: WhisperModel | None = None
 
     @property
-    def model(self) -> "WhisperModel":
+    def model(self) -> WhisperModel:
         """Lazy-load the Whisper model."""
         if self._model is None:
             from faster_whisper import WhisperModel
