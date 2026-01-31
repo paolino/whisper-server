@@ -48,7 +48,8 @@ build-docker tag='latest':
     set -euo pipefail
     nix build .#docker-image
     docker load < result
-    version=$(nix eval --raw .#version)
+    system=$(nix eval --raw --impure --expr 'builtins.currentSystem')
+    version=$(nix eval --raw ".#version.$system")
     docker image tag "ghcr.io/paolino/whisper-server:$version" \
         "ghcr.io/paolino/whisper-server:{{ tag }}"
 
@@ -77,22 +78,7 @@ smoke-test-docker port="9003":
         ghcr.io/paolino/whisper-server:latest
     echo "Waiting for server to start..."
     sleep 30
-    python3 -c "
-import asyncio
-import websockets
-import json
-
-async def test():
-    async with websockets.connect('ws://localhost:{{ port }}') as ws:
-        await ws.send(json.dumps({'eof': True}))
-        response = await ws.recv()
-        result = json.loads(response)
-        assert result['status'] == 0, f'Bad status: {result}'
-        assert result['result']['final'] == True, f'Not final: {result}'
-        print('SMOKE TEST PASSED')
-
-asyncio.run(test())
-"
+    nix develop --quiet --command python3 scripts/smoke-test.py {{ port }}
     docker rm -f whisper-smoke
 
 # Serve documentation locally
