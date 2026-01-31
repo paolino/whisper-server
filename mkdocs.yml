@@ -44,3 +44,4 @@ nav:
   - Configuration: configuration.md
   - Cloud Deployment: cloud-deployment.md
   - Architecture: architecture.md
+  - CI/CD: ci-cd.md
