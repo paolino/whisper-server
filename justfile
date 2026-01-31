@@ -34,13 +34,27 @@ test:
     set -euo pipefail
     pytest src -v
 
-# Full CI pipeline
-CI:
+# Check formatting and lint (no modifications)
+check:
     #!/usr/bin/env bash
     set -euo pipefail
-    just format
-    just lint
-    just test
+    echo "==> Format check"
+    nix develop --quiet -c black --check src
+    nix develop --quiet -c ruff check src
+    echo "==> Type check"
+    nix develop --quiet -c mypy src
+
+# Run local CI (matches GitHub Actions)
+ci:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    echo "==> Lint"
+    just check
+    echo "==> Test"
+    nix develop --quiet -c pytest src -v
+    echo "==> Build docker"
+    nix build .#docker-image --quiet
+    echo "CI passed!"
 
 # Build docker image
 build-docker tag='latest':
