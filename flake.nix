@@ -56,7 +56,17 @@
         system:
         let
           pkgs = import nixpkgs { inherit system; };
-          version = self.dirtyShortRev or self.shortRev or "dev";
+          version =
+            let
+              versionFile =
+                if builtins.pathExists ./VERSION then builtins.readFile ./VERSION else null;
+              clean =
+                if versionFile != null
+                then builtins.replaceStrings [ "\n" " " ] [ "" "" ] versionFile
+                else null;
+            in
+            if clean != null && clean != "" then clean
+            else self.dirtyShortRev or self.shortRev or "dev";
 
           pythonEnv = pkgs.python3.withPackages (
             ps: with ps; [
