@@ -94,4 +94,4 @@ def test_process_uses_language_prompt() -> None:
 
     call_args = mock_model.call_args
     prompt = call_args[0][0]
-    assert "Correggi" in prompt
+    assert "correggendo" in prompt
