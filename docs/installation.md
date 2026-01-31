@@ -133,7 +133,26 @@ This automatically:
 
 ## Docker Deployment
 
-Build and run with Docker:
+Pre-built images are available on [GitHub Container Registry](https://github.com/paolino/whisper-server/pkgs/container/whisper-server).
+
+Pull and run:
+
+```bash
+docker run -d --rm \
+    --name whisper-server \
+    -p 9002:9002 \
+    -e WHISPER_MODEL=base \
+    ghcr.io/paolino/whisper-server:latest
+```
+
+Available images:
+
+- `ghcr.io/paolino/whisper-server:latest` - Latest release
+- `ghcr.io/paolino/whisper-server:0.1.0` - Specific version
+
+### Building Locally
+
+To build from source:
 
 ```bash
 # Build the image
@@ -144,16 +163,6 @@ just start-docker 9002 base
 
 # Stop
 just stop-docker
-```
-
-Or run directly:
-
-```bash
-docker run -d --rm \
-    --name whisper-server \
-    -p 9002:9002 \
-    -e WHISPER_MODEL=base \
-    ghcr.io/paolino/whisper-server:latest
 ```
 
 ## Firewall Configuration
