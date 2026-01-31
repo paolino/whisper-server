@@ -17,7 +17,6 @@ graph LR
 
     subgraph Release
         R[Manual Trigger]
-        V[Update VERSION]
         D[Tag + Docker + GitHub Release]
         S[Summary only]
     end
@@ -25,13 +24,11 @@ graph LR
     FB -->|push| PR
     PR -->|CI passes| M
     M -->|workflow_dispatch| R
-    R -->|dry_run=false| V
+    R -->|dry_run=false| D
     R -->|dry_run=true| S
-    V -->|commit + push| M
-    V --> D
 ```
 
-Feature branches trigger CI on PR. After merge to main, releases are triggered manually on main. With `dry_run=false`, the release workflow commits the VERSION bump back to main before creating the tag and artifacts. With `dry_run=true`, no changes are made - only a summary is printed.
+Feature branches trigger CI on PR. After merge to main, releases are triggered manually. With `dry_run=false`, the release workflow creates a git tag, pushes the Docker image, and creates a GitHub release. With `dry_run=true`, no changes are made - only a summary is printed.
 
 ## CI Workflow
 
