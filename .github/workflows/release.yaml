@@ -95,8 +95,12 @@ jobs:
         run: |
           echo "${{ inputs.version }}" > VERSION
           git add VERSION
-          git commit -m "chore: bump version to ${{ inputs.version }}"
-          git push
+          if git diff --cached --quiet; then
+            echo "VERSION already set to ${{ inputs.version }}"
+          else
+            git commit -m "chore: bump version to ${{ inputs.version }}"
+            git push
+          fi
 
       - name: Create and push tag
         run: |
