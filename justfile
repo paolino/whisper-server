@@ -67,6 +67,34 @@ stop-docker:
     #!/usr/bin/env bash
     docker stop whisper-server || true
 
+# Smoke test docker image
+smoke-test-docker port="9003":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    just build-docker
+    docker rm -f whisper-smoke 2>/dev/null || true
+    docker run -d --name whisper-smoke -p {{ port }}:9002 \
+        ghcr.io/paolino/whisper-server:latest
+    echo "Waiting for server to start..."
+    sleep 30
+    python3 -c "
+import asyncio
+import websockets
+import json
+
+async def test():
+    async with websockets.connect('ws://localhost:{{ port }}') as ws:
+        await ws.send(json.dumps({'eof': True}))
+        response = await ws.recv()
+        result = json.loads(response)
+        assert result['status'] == 0, f'Bad status: {result}'
+        assert result['result']['final'] == True, f'Not final: {result}'
+        print('SMOKE TEST PASSED')
+
+asyncio.run(test())
+"
+    docker rm -f whisper-smoke
+
 # Serve documentation locally
 serve-docs:
     #!/usr/bin/env bash

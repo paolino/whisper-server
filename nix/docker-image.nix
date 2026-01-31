@@ -17,9 +17,10 @@ let
     set -euo pipefail
     export PATH="${pkgs.ffmpeg}/bin:$PATH"
     export HOME=/tmp
-    pip install --quiet --user faster-whisper
-    export PYTHONPATH="/app:$HOME/.local/lib/python3.12/site-packages:$PYTHONPATH"
-    python /app/server.py
+    export PIP_TARGET=/tmp/pip-packages
+    pip install --quiet faster-whisper
+    export PYTHONPATH="/app:$PIP_TARGET:''${PYTHONPATH:-}"
+    exec python /app/server.py
   '';
 in
 pkgs.dockerTools.buildImage {
@@ -32,6 +33,7 @@ pkgs.dockerTools.buildImage {
       pythonEnv
       pkgs.ffmpeg
       pkgs.cacert
+      pkgs.stdenv.cc.cc.lib
     ];
     pathsToLink = [
       "/bin"
@@ -52,6 +54,7 @@ pkgs.dockerTools.buildImage {
     };
     Env = [
       "SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
+      "LD_LIBRARY_PATH=${pkgs.stdenv.cc.cc.lib}/lib"
       "WHISPER_MODEL=base"
       "WHISPER_HOST=0.0.0.0"
       "WHISPER_PORT=9002"
