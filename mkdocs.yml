@@ -1,0 +1,44 @@
+site_name: Whisper Server
+site_url: https://paolino.github.io/whisper-server/
+repo_url: https://github.com/paolino/whisper-server
+
+theme:
+  name: material
+  palette:
+    scheme: slate
+  features:
+    - navigation.indexes
+    - navigation.sections
+    - navigation.path
+    - toc.integrate
+    - content.code.copy
+
+plugins:
+  - search
+  - asciinema-player
+
+markdown_extensions:
+  - admonition
+  - tables
+  - footnotes
+  - def_list
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Android Setup: android-setup.md
+  - Configuration: configuration.md
+  - Architecture: architecture.md
