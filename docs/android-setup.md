@@ -14,6 +14,11 @@ This guide covers configuring Konele on your Android device to use your self-hos
 2. Sign in with your Tailscale account
 3. Ensure the VPN is connected (check for the Tailscale icon in your status bar)
 
+!!! tip "Enable Always-on VPN"
+    Tailscale disconnects after phone restarts. To keep it always connected:
+
+    **Settings** → **Network & internet** → **VPN** → **Tailscale** ⚙️ → **Always-on VPN**
+
 ## Install Konele
 
 Konele (K6nele) is an open-source speech recognition app for Android. Install from any of these sources:
@@ -124,9 +129,13 @@ If it works, you'll see your spoken text appear after a brief pause.
 
 ### Connection Failed
 
-- **Check Tailscale**: Ensure both devices show as connected in the Tailscale app
+- **Check Tailscale**: Ensure both devices show as connected in the Tailscale app. After a phone restart, open the Tailscale app to reconnect.
 - **Verify server is running**: On your server, check `systemctl status whisper-server` or `docker ps`
 - **Test connectivity**: From your phone's browser, try accessing `http://YOUR_TAILSCALE_IP:9002` (it won't load a page, but shouldn't timeout)
+
+### Connection Lost After Phone Restart
+
+Tailscale doesn't auto-reconnect after a phone restart unless you enable Always-on VPN. Open the Tailscale app to reconnect, or enable Always-on VPN (see Install Tailscale section above).
 
 ### No Transcription / Empty Results
 
