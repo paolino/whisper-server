@@ -45,6 +45,9 @@ site/
 # Whisper models cache
 .cache/
 
+# LLama models
+models/
+
 # Environment
 .env
 .env.local
