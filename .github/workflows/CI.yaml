@@ -52,6 +52,13 @@ jobs:
       - name: Build Docker image
         run: nix build .#docker-image --quiet
 
+      - name: Upload Docker image
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image
+          path: result
+          retention-days: 7
+
   smoke-test:
     runs-on: ubuntu-latest
     needs: build-docker
