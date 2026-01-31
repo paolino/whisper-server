@@ -59,5 +59,11 @@ pkgs.dockerTools.buildImage {
       "WHISPER_HOST=0.0.0.0"
       "WHISPER_PORT=9002"
     ];
+    Labels = {
+      "org.opencontainers.image.source" = "https://github.com/paolino/whisper-server";
+      "org.opencontainers.image.description" = "Speech-to-text server using faster-whisper, compatible with Konele Android app";
+      "org.opencontainers.image.licenses" = "MIT";
+      "org.opencontainers.image.version" = version;
+    };
   };
 }
