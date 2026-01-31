@@ -11,9 +11,16 @@ services:
       - WHISPER_DEVICE=${WHISPER_DEVICE:-auto}
       - WHISPER_COMPUTE_TYPE=${WHISPER_COMPUTE_TYPE:-auto}
       # WHISPER_LANGUAGE - set to language code (e.g., en, it) or omit for auto-detect
+      # LLama post-processing (optional)
+      - WHISPER_LLAMA_ENABLED=${WHISPER_LLAMA_ENABLED:-false}
+      - WHISPER_LLAMA_MODEL_PATH=${WHISPER_LLAMA_MODEL_PATH:-/models/llama.gguf}
+      - WHISPER_LLAMA_CONTEXT_SIZE=${WHISPER_LLAMA_CONTEXT_SIZE:-2048}
+      - WHISPER_LLAMA_MAX_TOKENS=${WHISPER_LLAMA_MAX_TOKENS:-512}
+      - WHISPER_LLAMA_THREADS=${WHISPER_LLAMA_THREADS:-4}
     volumes:
       - whisper-cache:/tmp/pip-packages
       - huggingface-cache:/tmp/.cache
+      - ${LLAMA_MODEL_DIR:-./models}:/models:ro
     healthcheck:
       test: ["CMD", "python3", "-c", "import socket; s=socket.socket(); s.connect(('localhost',9002)); s.close()"]
       interval: 30s

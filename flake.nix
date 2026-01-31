@@ -115,6 +115,10 @@
                 echo "Installing faster-whisper..."
                 pip install --quiet faster-whisper
               fi
+              if ! python -c "import llama_cpp" 2>/dev/null; then
+                echo "Installing llama-cpp-python..."
+                pip install --quiet llama-cpp-python
+              fi
               export PYTHONPATH="$PWD/src:$PYTHONPATH"
             '';
           };

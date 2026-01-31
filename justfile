@@ -28,6 +28,21 @@ run port="9002" model="base":
     export WHISPER_MODEL="{{ model }}"
     python src/server.py
 
+# Run the whisper server with LLama post-processing
+run-llama port="9002" model="base" llama_model="":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [ -z "{{ llama_model }}" ]; then
+        echo "Error: llama_model path is required"
+        echo "Usage: just run-llama llama_model=/path/to/model.gguf"
+        exit 1
+    fi
+    export WHISPER_PORT="{{ port }}"
+    export WHISPER_MODEL="{{ model }}"
+    export WHISPER_LLAMA_ENABLED=true
+    export WHISPER_LLAMA_MODEL_PATH="{{ llama_model }}"
+    python src/server.py
+
 # Run tests
 test:
     #!/usr/bin/env bash
@@ -75,6 +90,24 @@ start-docker port="9002" model="base":
         --name whisper-server \
         -p {{ port }}:9002 \
         -e WHISPER_MODEL="{{ model }}" \
+        ghcr.io/paolino/whisper-server:latest
+
+# Start docker container with LLama post-processing
+start-docker-llama port="9002" model="base" llama_model="":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [ -z "{{ llama_model }}" ]; then
+        echo "Error: llama_model path is required"
+        echo "Usage: just start-docker-llama llama_model=/path/to/model.gguf"
+        exit 1
+    fi
+    docker run -d --rm \
+        --name whisper-server \
+        -p {{ port }}:9002 \
+        -v "{{ llama_model }}:/models/llama.gguf:ro" \
+        -e WHISPER_MODEL="{{ model }}" \
+        -e WHISPER_LLAMA_ENABLED=true \
+        -e WHISPER_LLAMA_MODEL_PATH=/models/llama.gguf \
         ghcr.io/paolino/whisper-server:latest
 
 # Stop docker container

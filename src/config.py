@@ -13,6 +13,13 @@ class Config(BaseSettings):
     compute_type: str = "auto"
     language: str | None = None
 
+    # LLama post-processing settings
+    llama_enabled: bool = False
+    llama_model_path: str | None = None
+    llama_context_size: int = 2048
+    llama_max_tokens: int = 512
+    llama_threads: int = 4
+
     model_config = {"env_prefix": "WHISPER_"}
 
 

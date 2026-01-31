@@ -19,6 +19,9 @@ let
     export HOME=/tmp
     export PIP_TARGET=/tmp/pip-packages
     pip install --quiet faster-whisper
+    if [ "''${WHISPER_LLAMA_ENABLED:-false}" = "true" ]; then
+      pip install --quiet llama-cpp-python
+    fi
     export PYTHONPATH="/app:$PIP_TARGET:''${PYTHONPATH:-}"
     exec python /app/server.py
   '';
@@ -58,6 +61,7 @@ pkgs.dockerTools.buildImage {
       "WHISPER_MODEL=base"
       "WHISPER_HOST=0.0.0.0"
       "WHISPER_PORT=9002"
+      "WHISPER_LLAMA_ENABLED=false"
     ];
     Labels = {
       "org.opencontainers.image.source" = "https://github.com/paolino/whisper-server";
