@@ -34,6 +34,7 @@ def process_request(
             del request.headers["Sec-WebSocket-Protocol"]
     return None
 
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
