@@ -6,6 +6,7 @@ let
   pythonEnv = pkgs.python3.withPackages (
     ps: with ps; [
       websockets
+      aiohttp
       numpy
       pydantic
       pydantic-settings
@@ -52,6 +53,7 @@ pkgs.dockerTools.buildImage {
     WorkingDir = "/app";
     ExposedPorts = {
       "9002/tcp" = { };
+      "9003/tcp" = { };
     };
     Env = [
       "SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
@@ -59,6 +61,7 @@ pkgs.dockerTools.buildImage {
       "WHISPER_MODEL=base"
       "WHISPER_HOST=0.0.0.0"
       "WHISPER_PORT=9002"
+      "WHISPER_HTTP_PORT=9003"
       "WHISPER_LLAMA_ENABLED=false"
     ];
     Labels = {

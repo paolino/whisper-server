@@ -71,6 +71,7 @@
           pythonEnv = pkgs.python3.withPackages (
             ps: with ps; [
               websockets
+              aiohttp
               numpy
               pydantic
               pydantic-settings

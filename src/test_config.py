@@ -8,6 +8,7 @@ def test_config_defaults() -> None:
     config = Config()
     assert config.host == "0.0.0.0"
     assert config.port == 9002
+    assert config.http_port == 9003
     assert config.model == "base"
     assert config.device == "auto"
     assert config.compute_type == "auto"

@@ -8,6 +8,7 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 import websockets
+from aiohttp import web
 from websockets.http11 import Request, Response
 
 if TYPE_CHECKING:
@@ -16,6 +17,8 @@ if TYPE_CHECKING:
 from config import Config, load_config
 from postprocessor import PostProcessor
 from transcriber import Transcriber
+
+SUPPORTED_AUDIO_EXTENSIONS = {".oga", ".ogg", ".wav", ".mp3", ".m4a"}
 
 
 def process_request(
@@ -150,8 +153,92 @@ class WhisperServer:
         }
         await websocket.send(json.dumps(response))
 
+    async def handle_transcribe(self, request: web.Request) -> web.Response:
+        """Handle HTTP POST /transcribe for batch transcription."""
+        try:
+            reader = await request.multipart()
+            field = await reader.next()
+
+            if field is None:
+                return web.json_response(
+                    {"error": "Missing 'audio' field in form data"},
+                    status=400,
+                )
+
+            # Ensure we have a body part, not a nested multipart reader
+            if not hasattr(field, "name") or field.name != "audio":
+                return web.json_response(
+                    {"error": "Missing 'audio' field in form data"},
+                    status=400,
+                )
+
+            filename = getattr(field, "filename", None) or "audio.bin"
+            extension = filename.lower().rsplit(".", 1)[-1] if "." in filename else ""
+
+            if f".{extension}" not in SUPPORTED_AUDIO_EXTENSIONS:
+                return web.json_response(
+                    {
+                        "error": f"Unsupported format '.{extension}'. "
+                        f"Supported: {', '.join(sorted(SUPPORTED_AUDIO_EXTENSIONS))}"
+                    },
+                    status=400,
+                )
+
+            audio_data = await field.read()  # type: ignore[union-attr]
+
+            if not audio_data:
+                return web.json_response(
+                    {"error": "Empty audio file"},
+                    status=400,
+                )
+
+            logger.info(
+                "HTTP transcribe: %s (%d bytes)",
+                filename,
+                len(audio_data),
+            )
+
+            transcript = await self.transcriber.transcribe_file(audio_data, filename)
+
+            if self.postprocessor.enabled:
+                loop = asyncio.get_event_loop()
+                transcript = await loop.run_in_executor(
+                    None,
+                    self.postprocessor.process,
+                    transcript,
+                    self.config.language,
+                )
+                logger.info("Post-processed: %s", transcript)
+
+            logger.info("Transcription: %s", transcript)
+
+            return web.json_response({"text": transcript})
+
+        except TimeoutError:
+            return web.json_response(
+                {"error": "Transcription timed out"},
+                status=504,
+            )
+        except ValueError as e:
+            return web.json_response(
+                {"error": str(e)},
+                status=400,
+            )
+        except Exception:
+            logger.exception("Error processing transcription request")
+            return web.json_response(
+                {"error": "Internal server error"},
+                status=500,
+            )
+
+    def _create_http_app(self) -> web.Application:
+        """Create the aiohttp application for HTTP endpoints."""
+        app = web.Application()
+        app.router.add_post("/transcribe", self.handle_transcribe)
+        return app
+
     async def run(self) -> None:
-        """Start the WebSocket server."""
+        """Start the WebSocket and HTTP servers."""
         logger.info("Loading Whisper model: %s", self.config.model)
         _ = self.transcriber.model  # Preload model
 
@@ -160,11 +247,24 @@ class WhisperServer:
             _ = self.postprocessor.model  # Preload model
 
         logger.info(
-            "Starting server on %s:%d",
+            "Starting WebSocket server on %s:%d",
             self.config.host,
             self.config.port,
         )
+        logger.info(
+            "Starting HTTP server on %s:%d",
+            self.config.host,
+            self.config.http_port,
+        )
 
+        # Start HTTP server
+        http_app = self._create_http_app()
+        http_runner = web.AppRunner(http_app)
+        await http_runner.setup()
+        http_site = web.TCPSite(http_runner, self.config.host, self.config.http_port)
+        await http_site.start()
+
+        # Start WebSocket server
         async with websockets.serve(
             self.handle_connection,
             self.config.host,
