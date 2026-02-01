@@ -7,6 +7,7 @@ services:
     environment:
       - WHISPER_HOST=${WHISPER_HOST}  # Set to Tailscale IP for secure remote access
       - WHISPER_PORT=${WHISPER_PORT:-9002}
+      - WHISPER_HTTP_PORT=${WHISPER_HTTP_PORT:-9003}
       - WHISPER_MODEL=${WHISPER_MODEL:-small}
       - WHISPER_DEVICE=${WHISPER_DEVICE:-auto}
       - WHISPER_COMPUTE_TYPE=${WHISPER_COMPUTE_TYPE:-auto}
