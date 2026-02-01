@@ -8,6 +8,7 @@ class Config(BaseSettings):
 
     host: str = "0.0.0.0"
     port: int = 9002
+    http_port: int = 9003
     model: str = "base"
     device: str = "auto"
     compute_type: str = "auto"

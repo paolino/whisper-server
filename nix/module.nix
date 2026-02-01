@@ -10,6 +10,7 @@ let
   pythonEnv = pkgs.python3.withPackages (
     ps: with ps; [
       websockets
+      aiohttp
       numpy
       pydantic
       pydantic-settings
@@ -58,7 +59,13 @@ in
     port = lib.mkOption {
       type = lib.types.port;
       default = 9002;
-      description = "Port to listen on.";
+      description = "WebSocket port to listen on.";
+    };
+
+    httpPort = lib.mkOption {
+      type = lib.types.port;
+      default = 9003;
+      description = "HTTP port for /transcribe endpoint.";
     };
 
     model = lib.mkOption {
@@ -118,6 +125,7 @@ in
       environment = {
         WHISPER_HOST = cfg.host;
         WHISPER_PORT = toString cfg.port;
+        WHISPER_HTTP_PORT = toString cfg.httpPort;
         WHISPER_MODEL = cfg.model;
         WHISPER_DEVICE = cfg.device;
         WHISPER_COMPUTE_TYPE = cfg.computeType;
@@ -149,7 +157,10 @@ in
     };
 
     networking.firewall = lib.mkIf cfg.tailscale.enable {
-      interfaces.${cfg.tailscale.interface}.allowedTCPPorts = [ cfg.port ];
+      interfaces.${cfg.tailscale.interface}.allowedTCPPorts = [
+        cfg.port
+        cfg.httpPort
+      ];
     };
   };
 }
