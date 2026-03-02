@@ -14,7 +14,7 @@ let
       numpy
       pydantic
       pydantic-settings
-      pip
+      faster-whisper
     ]
   );
 
@@ -29,11 +29,7 @@ let
       export WHISPER_HOST
     fi
 
-    # Install faster-whisper if not present
-    if ! python -c "import faster_whisper" 2>/dev/null; then
-      pip install --quiet --user faster-whisper
-    fi
-    export PYTHONPATH="$WHISPER_SRC:$HOME/.local/lib/python3.12/site-packages:$PYTHONPATH"
+    export PYTHONPATH="$WHISPER_SRC:''${PYTHONPATH:-}"
 
     exec python "$WHISPER_SRC/server.py"
   '';
