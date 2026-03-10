@@ -67,9 +67,13 @@ in
     model = lib.mkOption {
       type = lib.types.enum [
         "tiny"
+        "tiny.en"
         "base"
+        "base.en"
         "small"
+        "small.en"
         "medium"
+        "medium.en"
         "large-v3"
       ];
       default = "base";
