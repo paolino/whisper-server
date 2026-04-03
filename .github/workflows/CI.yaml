@@ -14,7 +14,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: paolino/dev-assets/setup-nix@v0.0.1
         with:
@@ -31,7 +31,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: paolino/dev-assets/setup-nix@v0.0.1
         with:
@@ -43,7 +43,7 @@ jobs:
   build-docker:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: paolino/dev-assets/setup-nix@v0.0.1
         with:
@@ -53,7 +53,7 @@ jobs:
         run: nix build .#docker-image --quiet
 
       - name: Upload Docker image
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: docker-image
           path: result
@@ -63,7 +63,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-docker
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: paolino/dev-assets/setup-nix@v0.0.1
         with:
